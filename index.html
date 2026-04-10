@@ -1,127 +1,283 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="cream">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>모찌서버 | 스태프 구금 정리표</title>
     <style>
+        /* Pretendard 변수형 폰트 - 깔끔함의 정석 */
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
         :root {
-            --bg-body: #0d1117;
-            --bg-card: #161b22;
-            --accent-pink: #ff79c6; /* 모찌 느낌의 핑크 포인트 */
-            --accent-purple: #bd93f9;
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
-            --text-danger: #ff5555;
-            --border: #30363d;
-            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+            /* 전환 애니메이션 속도 */
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+            --time: 0.4s;
         }
 
+        /* 🍦 크림 모드 (라이트) 변수 */
+        [data-theme="cream"] {
+            --bg-body: #fdfbf6; /* 따뜻한 크림색 배경 */
+            --bg-card: #ffffff;
+            --bg-neutral: #f4f1ea;
+            --text-primary: #2d2d2d;
+            --text-secondary: #666666;
+            --border: #e2e0d9;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 10px 30px rgba(180,170,150,0.15);
+            
+            --accent: #ff85c0; /* 모찌 핑크 */
+            --accent-sub: #b37feb; /* 퍼플 */
+            --danger: #ff4d4f;
+            --warning: #fa8c16;
+            --info: #1890ff;
+        }
+
+        /* 🌙 다크 모드 변수 */
+        [data-theme="dark"] {
+            --bg-body: #111216; /* 깊은 다크 배경 */
+            --bg-card: #1a1c22;
+            --bg-neutral: #24272f;
+            --text-primary: #ececed;
+            --text-secondary: #a1a1aa;
+            --border: #2d3139;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 10px 40px rgba(0,0,0,0.4);
+            
+            --accent: #ff9dcc;
+            --accent-sub: #d3adf7;
+            --danger: #ff7875;
+            --warning: #ffc069;
+            --info: #69c0ff;
+        }
+
+        /* 기본 초기화 */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
-            margin: 0;
-            padding: 0;
+            transition: background-color var(--time) var(--ease), color var(--time) var(--ease);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1100px;
-            margin: 50px auto;
-            padding: 0 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
         }
 
+        /* 상단 헤더 및 테마 스위치 */
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 50px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: var(--accent-pink);
-            text-shadow: 0 0 15px rgba(255, 121, 198, 0.3);
-            margin-bottom: 10px;
-        }
-
-        .staff-badge {
-            display: inline-block;
-            background: var(--accent-purple);
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-
-        section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            color: var(--accent-purple);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.05);
-            text-align: left;
-            padding: 12px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: 14px 12px;
+            padding-bottom: 20px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.95rem;
         }
 
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
+        .brand-zone h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
-        .punish-tag {
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85rem;
+        .brand-zone h1 span { color: var(--accent); }
+        .brand-zone p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
+
+        /* 테마 스위치 스타일 */
+        .theme-switch {
+            background: var(--bg-neutral);
+            border-radius: 30px;
+            padding: 4px;
+            display: flex;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            position: relative;
+            width: 70px;
+            height: 36px;
         }
 
-        .tag-red { background: rgba(255, 85, 85, 0.2); color: #ff5555; border: 1px solid rgba(255, 85, 85, 0.3); }
-        .tag-orange { background: rgba(255, 184, 108, 0.2); color: #ffb86c; border: 1px solid rgba(255, 184, 108, 0.3); }
-        .tag-blue { background: rgba(139, 233, 253, 0.2); color: #8be9fd; border: 1px solid rgba(139, 233, 253, 0.3); }
+        .theme-switch .icon {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            z-index: 2;
+            transition: color var(--time) var(--ease);
+        }
 
-        .note {
-            font-size: 0.85rem;
+        .theme-switch::after {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--time) var(--ease);
+            z-index: 1;
+        }
+
+        [data-theme="dark"] .theme-switch::after { transform: translateX(34px); }
+        [data-theme="cream"] .icon-sun { color: var(--warning); }
+        [data-theme="dark"] .icon-moon { color: var(--accent-sub); }
+
+        /* 섹션 타이틀 */
+        .section-header {
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .section-icon {
+            font-size: 1.4rem;
+        }
+
+        /* 카드 그리드 레이아웃 */
+        .rule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* 규칙 카드 디자인 */
+        .rule-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(0,0,0,0); /* 기본 보더 투명 */
+            transition: transform var(--time) var(--ease), border-color var(--time) var(--ease), box-shadow var(--time) var(--ease);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 호버 시 깔끔한 효과 */
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        [data-theme="cream"] .rule-card:hover { border-color: var(--border); }
+        [data-theme="dark"] .rule-card:hover { border-color: #333; }
+
+        .card-top h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .card-top p {
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-top: 5px;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+
+        /* 처분 수위 뱃지 라인 */
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .punish-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .punish-time {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 제재 등급별 색상 정의 */
+        .level-ban { border-left: 4px solid var(--danger); }
+        .level-ban:hover { border-color: var(--danger); }
+        .level-ban .punish-badge { background: rgba(255, 77, 79, 0.1); color: var(--danger); }
+        .level-ban .punish-time { color: var(--danger); }
+
+        .level-jail-high { border-left: 4px solid var(--warning); }
+        .level-jail-high:hover { border-color: var(--warning); }
+        .level-jail-high .punish-badge { background: rgba(250, 140, 22, 0.1); color: var(--warning); }
+
+        .level-jail-low { border-left: 4px solid var(--info); }
+        .level-jail-low:hover { border-color: var(--info); }
+        .level-jail-low .punish-badge { background: rgba(24, 144, 255, 0.1); color: var(--info); }
+
+        /* 비고 사항(회수 등) */
+        .note-text {
+            font-size: 0.8rem;
+            color: var(--accent-sub);
+            margin-top: 8px;
             display: block;
+        }
+
+        /* 하단 가이드 */
+        .guide-box {
+            margin-top: 60px;
+            background: var(--bg-neutral);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .guide-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .guide-box ul { list-style: none; }
+        .guide-box li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .guide-box li::before {
+            content: '▫';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
         }
 
         footer {
             text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
+            margin-top: 80px;
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            header { margin-bottom: 30px; }
+            .brand-zone h1 { font-size: 1.3rem; }
+            .rule-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -129,154 +285,175 @@
 
 <div class="container">
     <header>
-        <div class="staff-badge">STAFF ONLY</div>
-        <h1>모찌서버 스태프 구금 정리표</h1>
-        <p style="color: var(--text-secondary)">관리팀 재량 및 명확한 증거에 기반한 제재 가이드라인</p>
+        <div class="brand-zone">
+            <h1>Mochi <span>Staff</span></h1>
+            <p>스태프 전용 구금 가이드라인 (최종수정: 26.04.10)</p>
+        </div>
+        <div class="theme-switch" onclick="toggleTheme()" title="테마 변경">
+            <div class="icon icon-sun">☀️</div>
+            <div class="icon icon-moon">🌙</div>
+        </div>
     </header>
 
-    <section>
-        <h2>🚫 고위험군 및 영구 제재 (BAN)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 30%;">위반 항목</th>
-                    <th style="width: 45%;">세부 내용</th>
-                    <th style="width: 25%;">처분 수위</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>비인가 프로그램</td>
-                    <td>핵, 불법 프로그램 사용 및 핵 무기 소지/사용</td>
-                    <td><span class="punish-tag tag-red">즉시 영구 밴</span></td>
-                </tr>
-                <tr>
-                    <td>관리자 기만/비하</td>
-                    <td>스태프 기만 행위 및 서버 비하 발언</td>
-                    <td><span class="punish-tag tag-red">14일 ~ 영구 밴</span></td>
-                </tr>
-                <tr>
-                    <td>악의적 RP 방해</td>
-                    <td>범죄 후 고의 디컨/잠수, 이없살, 지속적 괴롭힘</td>
-                    <td><span class="punish-tag tag-red">최대 영구 밴</span></td>
-                </tr>
-                <tr>
-                    <td>V-DM (로드킬)</td>
-                    <td>차량으로 3인 이상 고의로 치는 행위 (볼링)</td>
-                    <td><span class="punish-tag tag-red">200분 ~ 영구 밴</span></td>
-                </tr>
-                <tr>
-                    <td>규정 악용</td>
-                    <td>가이드라인 미명시 부분 악용 및 리붓 악용</td>
-                    <td><span class="punish-tag tag-red">500분 ~ 영구 밴</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+    <div class="section-header">
+        <span class="section-icon">🚨</span>
+        <h2 style="color: var(--danger)">즉시 강력 처분 (BAN)</h2>
+    </div>
+    <div class="rule-grid">
+        <div class="rule-card level-ban">
+            <div class="card-top">
+                <h3>비인가 프로그램</h3>
+                <p>핵, 불법 프로그램 사용 적발 및 핵 무기 소지/습득 후 미반납 행위.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">CRITICAL</span>
+                <span class="punish-time">🔒 영구 BAN</span>
+            </div>
+        </div>
+        <div class="rule-card level-ban">
+            <div class="card-top">
+                <h3>관리자 기만 & 비하</h3>
+                <p>스태프 호출 시 거짓말, 증거 조작, 또는 서버 전체에 대한 악의적 비하.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">HIGH</span>
+                <span class="punish-time">14일 ~ 영구 BAN</span>
+            </div>
+        </div>
+        <div class="rule-card level-ban">
+            <div class="card-top">
+                <h3>고의적 RP 방해 / 악용</h3>
+                <p>범죄 후 고의 디컨/잠수, 이없살, 괴롭힘, 시스템/리붓 악용 취득.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">HIGH</span>
+                <span class="punish-time">최대 영구 BAN</span>
+            </div>
+        </div>
+    </div>
 
-    <section>
-        <h2>⚖️ 일반 RP 위반 (JAIL)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 30%;">위반 항목</th>
-                    <th style="width: 45%;">세부 내용</th>
-                    <th style="width: 25%;">처분 수위</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>NON-RP / 법률 미숙지</td>
-                    <td>상황에 맞지 않는 행동 및 서버 법률 위반</td>
-                    <td><span class="punish-tag tag-orange">60분 ~ 300분</span></td>
-                </tr>
-                <tr>
-                    <td>분쟁 유도 / 발언</td>
-                    <td>고의적 분쟁 유도, 채팅 포함 분쟁성 발언</td>
-                    <td><span class="punish-tag tag-orange">120분 ~ 밴</span></td>
-                </tr>
-                <tr>
-                    <td>보호구역 위반</td>
-                    <td>보호구역 내 RP 진행 및 고의 진입</td>
-                    <td><span class="punish-tag tag-orange">120분 ~ 300분</span></td>
-                </tr>
-                <tr>
-                    <td>사후 브리핑 위반</td>
-                    <td>사망 후 마이크 미음소거 및 RP 영향 발언</td>
-                    <td><span class="punish-tag tag-orange">120분 ~ 300분</span></td>
-                </tr>
-                <tr>
-                    <td>제 3자 개입</td>
-                    <td>RP와 무관한 제 3자의 개입 확인 시</td>
-                    <td><span class="punish-tag tag-orange">120분 ~</span></td>
-                </tr>
-                <tr>
-                    <td>기억 RP / 이중 RP</td>
-                    <td>캐릭터 기억 조작 및 이중 RP 수행</td>
-                    <td><span class="punish-tag tag-orange">60분 ~ 300분</span></td>
-                </tr>
-                <tr>
-                    <td>음성 변조</td>
-                    <td>마이크 변조 프로그램 사용 적발</td>
-                    <td><span class="punish-tag tag-orange">120분</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+    <div class="section-header">
+        <span class="section-icon">⚖️</span>
+        <h2 style="color: var(--warning)">중범죄 및 시스템 악용 (JAIL)</h2>
+    </div>
+    <div class="rule-grid">
+        <div class="rule-card level-jail-high">
+            <div class="card-top">
+                <h3>분쟁 유도 / 분쟁성 발언</h3>
+                <p>고의적으로 분쟁을 유도하는 RP, 채팅 및 보이스를 통한 분쟁성 언행.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">MEDIUM</span>
+                <span class="punish-time">120분 ~ BAN</span>
+            </div>
+        </div>
+        <div class="rule-card level-jail-high">
+            <div class="card-top">
+                <h3>V-DM (로드킬 Bolling)</h3>
+                <p>차량으로 3인 이상 고의 로드킬. (교통사고 RP는 제외, 고의성 판단 필수)</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">MEDIUM</span>
+                <span class="punish-time">200분 ~ BAN</span>
+            </div>
+        </div>
+        <div class="rule-card level-jail-high">
+            <div class="card-top">
+                <h3>그래픽 패치 / 음성 변조</h3>
+                <p>금지된 그래픽 패치(1차) 및 마이크 음성 변조 프로그램 사용.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">MEDIUM</span>
+                <span class="punish-time">120분 ~ 300분</span>
+            </div>
+        </div>
+        <div class="rule-card level-jail-high">
+            <div class="card-top">
+                <h3>사후 브리핑 위반 / 제3자</h3>
+                <p>사망 후 RP 영향 발언, 마이크 미음소거, RP 중 제3자 개입.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">MEDIUM</span>
+                <span class="punish-time">120분 ~ 300분</span>
+            </div>
+        </div>
+    </div>
 
-    <section>
-        <h2>🏢 팩션 및 행정 위반</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 30%;">위반 항목</th>
-                    <th style="width: 45%;">세부 내용</th>
-                    <th style="width: 25%;">처분 수위</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>팩션 권한 남용</td>
-                    <td>수갑, 벌금 남용 및 물품 무상 제공/횡령</td>
-                    <td><span class="punish-tag tag-blue">120분 ~ 300분</span><br><span class="note">* 물품/금액 회수 병행</span></td>
-                </tr>
-                <tr>
-                    <td>공무원 근무 태만</td>
-                    <td>출근 상태로 잠수 행위 적발</td>
-                    <td><span class="punish-tag tag-blue">120분</span></td>
-                </tr>
-                <tr>
-                    <td>RP 거부</td>
-                    <td>정당한 사유 없이 RP 거부 시</td>
-                    <td><span class="punish-tag tag-blue">팩션 경고 ~ 해체</span></td>
-                </tr>
-                <tr>
-                    <td>소음/비행 매너</td>
-                    <td>보호구역 소음 및 헬기 저공 비행</td>
-                    <td><span class="punish-tag tag-blue">경고 후 120분~</span></td>
-                </tr>
-                <tr>
-                    <td>팩션 이모지</td>
-                    <td>이모지 미착용 (1차 경고 / 2차 추방)</td>
-                    <td><span class="punish-tag tag-blue">3차 구금 120분</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+    <div class="section-header">
+        <span class="section-icon">🏢</span>
+        <h2 style="color: var(--info)">경범죄 및 팩션 규정 (ADMIN)</h2>
+    </div>
+    <div class="rule-grid">
+        <div class="rule-card level-jail-low">
+            <div class="card-top">
+                <h3>NON-RP / 법률 미숙지</h3>
+                <p>상황에 맞지 않는 비상식적 행동 및 서버 법률 위반 행위.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">LOW</span>
+                <span class="punish-time">60분 ~ 300분</span>
+            </div>
+        </div>
+        <div class="rule-card level-jail-low">
+            <div class="card-top">
+                <h3>팩션 권한 남용 / 횡령</h3>
+                <p>수갑/벌금 남용, 물품 무상 제공, 팩션 계좌 횡령 및 물품 미반납.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">ADMIN</span>
+                <div>
+                    <span class="punish-time">120분 ~ 300분</span>
+                    <span class="note-text">* 즉시 회수 처리 병행</span>
+                </div>
+            </div>
+        </div>
+        <div class="rule-card level-jail-low">
+            <div class="card-top">
+                <h3>보호구역 / 매너 위반</h3>
+                <p>보호구역 내 RP, 소음 공해, 헬기 저공 비행, 공무원 잠수.</p>
+            </div>
+            <div class="card-bottom">
+                <span class="punish-badge">LOW</span>
+                <span class="punish-time">경고 후 120분 ~</span>
+            </div>
+        </div>
+    </div>
 
-    <section style="background: rgba(255, 121, 198, 0.05); border-color: var(--accent-pink);">
-        <h2 style="color: var(--accent-pink);">💡 스태프 공지사항</h2>
-        <ul style="list-style: none; padding: 0; font-size: 0.9rem; color: var(--text-secondary);">
-            <li style="margin-bottom: 10px;">• 모든 제재는 <strong>기록(Log)</strong> 또는 <strong>영상 증거</strong>가 확보된 상태에서 집행합니다.</li>
-            <li style="margin-bottom: 10px;">• 경미한 첫 적발의 경우, 상황에 따라 구두 경고 후 처분 가능합니다.</li>
-            <li>• 유저의 이의 제기는 절대 인게임에서 응대하지 않으며, <strong>고객센터</strong>로 안내합니다.</li>
+    <div class="guide-box">
+        <h3>💡 필수 행동 수칙</h3>
+        <ul>
+            <li>모든 제재는 <strong>명확한 증거(영상, 로그)</strong>를 확보한 후 집행합니다.</li>
+            <li>본 가이드라인에 없는 내용은 독단적 판단 대신 <strong>어드민 스태프</strong>에게 문의합니다.</li>
+            <li>유저와의 인게임 말싸움은 금지하며, 이의 제기는 오직 <strong>고객센터</strong>로만 안내합니다.</li>
         </ul>
-    </section>
+    </div>
 
     <footer>
-        &copy; 2026 모찌서버 관리팀(STAFF) - 상기 내용은 운영 방침에 따라 상시 변동될 수 있습니다.
+        &copy; 2026 모찌서버 ADMIN TEAM. Confidential for Staff.
     </footer>
 </div>
+
+<script>
+    // 테마 토글 함수
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = (currentTheme === 'cream') ? 'dark' : 'cream';
+        
+        html.setAttribute('data-theme', newTheme);
+        
+        // 유저 선택 저장 (브라우저 종료 후에도 유지)
+        localStorage.setItem('mochi_theme', newTheme);
+    }
+
+    // 초기 로딩 시 저장된 테마 불러오기
+    (function() {
+        const savedTheme = localStorage.getItem('mochi_theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    })();
+</script>
 
 </body>
 </html>
