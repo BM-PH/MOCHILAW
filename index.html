@@ -1,459 +1,463 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="cream">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>모찌서버 | 스태프 구금 정리표</title>
+    <title>MOCHI STAFF SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Pretendard 변수형 폰트 - 깔끔함의 정석 */
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
-
-        :root {
-            /* 전환 애니메이션 속도 */
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-            --time: 0.4s;
-        }
-
-        /* 🍦 크림 모드 (라이트) 변수 */
-        [data-theme="cream"] {
-            --bg-body: #fdfbf6; /* 따뜻한 크림색 배경 */
-            --bg-card: #ffffff;
-            --bg-neutral: #f4f1ea;
-            --text-primary: #2d2d2d;
-            --text-secondary: #666666;
-            --border: #e2e0d9;
+        /* [성능 최적화 & UX/UI 고도화] 테마 변수 시스템 */
+        :root[data-theme="light"] {
+            --bg: #ffffff; 
+            --bg2: #f8f9fa; 
+            --bg3: #f1f3f5; 
+            --surface: #ffffff;
+            --border: #e9ecef; 
+            --blue: #2563eb; --blue-dim: rgba(37, 99, 235, 0.08); --blue-glow: rgba(37, 99, 235, 0.2);
+            --red: #dc2626; --red-dim: rgba(220, 38, 38, 0.08); --red-glow: rgba(220, 38, 38, 0.2);
+            --green: #16a34a;
+            --text: #111827; 
+            --muted: #6b7280; 
+            --accent: #8b5cf6;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-md: 0 10px 30px rgba(180,170,150,0.15);
-            
-            --accent: #ff85c0; /* 모찌 핑크 */
-            --accent-sub: #b37feb; /* 퍼플 */
-            --danger: #ff4d4f;
-            --warning: #fa8c16;
-            --info: #1890ff;
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --shadow-hover: 0 12px 32px rgba(0,0,0,0.1);
+            --glass-bg: rgba(255, 255, 255, 0.8);
         }
 
-        /* 🌙 다크 모드 변수 */
-        [data-theme="dark"] {
-            --bg-body: #111216; /* 깊은 다크 배경 */
-            --bg-card: #1a1c22;
-            --bg-neutral: #24272f;
-            --text-primary: #ececed;
-            --text-secondary: #a1a1aa;
-            --border: #2d3139;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-            --shadow-md: 0 10px 40px rgba(0,0,0,0.4);
-            
-            --accent: #ff9dcc;
-            --accent-sub: #d3adf7;
-            --danger: #ff7875;
-            --warning: #ffc069;
-            --info: #69c0ff;
+        :root[data-theme="dark"] {
+            --bg: #000000;
+            --bg2: #09090b; 
+            --bg3: #18181b; 
+            --surface: #0f0f11; 
+            --border: #27272a; 
+            --blue: #3b82f6; --blue-dim: rgba(59, 130, 246, 0.15); --blue-glow: rgba(59, 130, 246, 0.3);
+            --red: #ef4444; --red-dim: rgba(239, 68, 68, 0.15); --red-glow: rgba(239, 68, 68, 0.3);
+            --green: #22c55e;
+            --text: #f9fafb; 
+            --muted: #a1a1aa; 
+            --accent: #a78bfa;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.6);
+            --shadow-hover: 0 12px 32px rgba(0,0,0,0.8);
+            --glass-bg: rgba(9, 9, 11, 0.8);
         }
 
-        /* 기본 초기화 */
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        /* 렌더링 최적화 기본 설정 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; overflow: hidden; transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        /* SIDEBAR */
+        .sidebar { width: 280px; background: var(--bg2); border-right: 1px solid var(--border); height: 100vh; overflow-y: auto; display: flex; flex-direction: column; z-index: 100; contain: strict; transition: background-color 0.4s ease, border-color 0.4s ease; }
+        .sidebar-header { padding: 28px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10; transition: background-color 0.4s ease, border-color 0.4s ease; }
+        .sidebar-brand { font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: 0.15em; display: flex; align-items: center; gap: 12px; }
+        .brand-dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; box-shadow: 0 0 12px var(--blue-glow); }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1) translateZ(0); } 50% { opacity: 0.5; transform: scale(0.85) translateZ(0); } }
         
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            transition: background-color var(--time) var(--ease), color var(--time) var(--ease);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
+        .sidebar-nav { padding: 20px 16px; flex: 1; }
+        .group-label { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 8px 12px; margin: 16px 0 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: color 0.2s ease, opacity 0.2s ease; }
+        .blue-group { color: var(--blue); } .red-group { color: var(--red); }
+        .group-label:hover { opacity: 0.8; }
+        .submenu { list-style: none; margin-bottom: 12px; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; max-height: 1000px; will-change: max-height; }
+        .submenu.collapsed { max-height: 0; }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px 80px;
-        }
+        /* 메모리 최적화: transition: all -> 특정 속성만 지정 */
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; font-size: 13.5px; color: var(--muted); cursor: pointer; border-radius: 10px; margin-bottom: 4px; transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease; border: 1px solid transparent; font-weight: 500; }
+        .nav-item::before { content: ''; width: 4px; height: 4px; background: var(--muted); border-radius: 50%; flex-shrink: 0; transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; opacity: 0.5; }
+        .nav-item:hover { background-color: var(--bg3); color: var(--text); transform: translateX(4px) translateZ(0); }
+        .nav-item:hover::before { opacity: 1; transform: scale(1.5) translateZ(0); }
+        .nav-item.active-blue { background-color: var(--blue-dim); color: var(--blue); border-color: rgba(37, 99, 235, 0.2); font-weight: 700; box-shadow: inset 0 0 0 1px var(--blue-dim); }
+        .nav-item.active-blue::before { background-color: var(--blue); opacity: 1; transform: scale(1.5) translateZ(0); box-shadow: 0 0 8px var(--blue-glow); }
+        .nav-item.active-red { background-color: var(--red-dim); color: var(--red); border-color: rgba(220, 38, 38, 0.2); font-weight: 700; box-shadow: inset 0 0 0 1px var(--red-dim); }
+        .nav-item.active-red::before { background-color: var(--red); opacity: 1; transform: scale(1.5) translateZ(0); box-shadow: 0 0 8px var(--red-glow); }
 
-        /* 상단 헤더 및 테마 스위치 */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 50px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
+        .theme-toggle-area { padding: 20px; border-top: 1px solid var(--border); background: var(--bg2); transition: background-color 0.4s ease, border-color 0.4s ease; }
+        .theme-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, background-color 0.3s ease; box-shadow: var(--shadow-sm); }
+        .theme-btn:hover { border-color: var(--blue); transform: translateY(-2px) translateZ(0); box-shadow: var(--shadow-md); color: var(--blue); }
 
-        .brand-zone h1 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
+        /* MAIN CONTENT */
+        .main-content { flex: 1; height: 100vh; overflow-y: auto; scroll-behavior: smooth; background: var(--bg); contain: strict; position: relative; }
+        .page-section { min-height: 100vh; padding: 80px 60px; border-bottom: 1px solid var(--border); opacity: 0; transform: translateY(30px) translateZ(0); transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; max-width: 1200px; margin: 0 auto; }
+        .page-section.visible { opacity: 1; transform: translateY(0) translateZ(0); }
+        .page-number { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.2em; margin-bottom: 16px; font-weight: 700; }
+        .page-title { font-size: 36px; font-weight: 900; margin-bottom: 48px; line-height: 1.3; letter-spacing: -0.02em; }
+        .blue { color: var(--blue); } .red { color: var(--red); }
 
-        .brand-zone h1 span { color: var(--accent); }
-        .brand-zone p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
+        /* BLOCK & UI */
+        .block { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px 36px; margin-bottom: 20px; line-height: 1.8; font-size: 14.5px; box-shadow: var(--shadow-sm); transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease, border-color 0.4s ease; }
+        .block:hover { box-shadow: var(--shadow-md); }
+        .block p { margin-bottom: 8px; }
+        .block p:last-child { margin-bottom: 0; }
+        
+        .section-header { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 16px; border-radius: 8px; margin: 32px 0 16px; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
+        .section-header.blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(37, 99, 235, 0.2); }
+        .section-header.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(220, 38, 38, 0.2); }
 
-        /* 테마 스위치 스타일 */
-        .theme-switch {
-            background: var(--bg-neutral);
-            border-radius: 30px;
-            padding: 4px;
-            display: flex;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            position: relative;
-            width: 70px;
-            height: 36px;
-        }
+        .tag-red { color: var(--red); font-weight: 700; } .tag-blue { color: var(--blue); font-weight: 700; }
+        .tag-green { color: var(--green); font-weight: 700; }
 
-        .theme-switch .icon {
-            width: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.1rem;
-            z-index: 2;
-            transition: color var(--time) var(--ease);
-        }
+        /* LINK CARD GPU 최적화 */
+        .link-card { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; text-decoration: none; color: inherit; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+        .link-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--blue); transform: scaleY(0) translateZ(0); transition: transform 0.3s ease; transform-origin: bottom; }
+        .link-card:hover { border-color: var(--blue); transform: translateY(-4px) translateZ(0); box-shadow: var(--shadow-hover); background-color: var(--bg); }
+        .link-card:hover::before { transform: scaleY(1) translateZ(0); }
+        .link-card::after { content: '→'; font-family: 'Space Mono', monospace; color: var(--muted); font-size: 18px; font-weight: 700; transition: transform 0.3s ease, color 0.3s ease; }
+        .link-card:hover::after { color: var(--blue); transform: translateX(4px) translateZ(0); }
+        .link-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+        .link-url { font-size: 14px; font-family: 'Space Mono', monospace; color: var(--text); font-weight: 700; }
 
-        .theme-switch::after {
-            content: '';
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            background: var(--bg-card);
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            box-shadow: var(--shadow-sm);
-            transition: transform var(--time) var(--ease);
-            z-index: 1;
-        }
+        /* SHORTCUT GRID */
+        .shortcut-grid { display: grid; grid-template-columns: auto 1fr; gap: 16px; background: transparent; margin-bottom: 24px; padding: 4px; }
+        .sc-key, .sc-desc { padding: 14px 20px; font-size: 14.5px; border-radius: 10px; display: flex; align-items: center; transition: background-color 0.4s ease, border-color 0.4s ease; }
+        .sc-key { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); background: var(--surface); border: 1px solid var(--border); border-bottom: 3px solid var(--border); white-space: nowrap; transition: transform 0.1s ease, border-bottom-width 0.1s ease, margin-bottom 0.1s ease, background-color 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .sc-desc { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+        .sc-key:active { transform: translateY(2px) translateZ(0); border-bottom-width: 1px; margin-bottom: 2px; }
 
-        [data-theme="dark"] .theme-switch::after { transform: translateX(34px); }
-        [data-theme="cream"] .icon-sun { color: var(--warning); }
-        [data-theme="dark"] .icon-moon { color: var(--accent-sub); }
+        /* WARN CARD */
+        .warn-card { border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; background: var(--surface); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease; gap: 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+        .warn-card:hover { border-color: var(--red); transform: translateY(-3px) scale(1.01) translateZ(0); box-shadow: var(--shadow-hover); }
+        .warn-card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        
+        .warn-badge { border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 6px; }
+        .warn-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+        .warn-badge.badge-1 { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
+        .warn-badge.badge-1::before { background: #16a34a; box-shadow: 0 0 8px rgba(22, 163, 74, 0.5); }
+        .warn-badge.badge-2 { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .warn-badge.badge-2::before { background: #d97706; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+        .warn-badge.dismiss { background: var(--red-dim); color: var(--red); border: 1px solid rgba(220, 38, 38, 0.3); }
+        .warn-badge.dismiss::before { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+        
+        .warn-notice { background: var(--bg2); border-left: 3px solid var(--red); border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13px; color: var(--muted); margin-top: 12px; line-height: 1.6; transition: background-color 0.4s ease, border-color 0.4s ease; }
+        
+        .guide-img { width: 100%; max-width: 520px; display: block; margin: 20px auto 0; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-md); transition: transform 0.3s ease, border-color 0.4s ease; }
+        .guide-img:hover { transform: scale(1.02) translateZ(0); }
+        
+        .chat-line { font-size: 15px; color: var(--green); font-weight: 500; line-height: 1.8; padding: 6px 12px; background: rgba(22, 163, 74, 0.05); border-radius: 8px; margin: 4px 0; border-left: 2px solid var(--green); }
+        .chat-separator { height: 1px; background: var(--border); margin: 20px 0; transition: background-color 0.4s ease; }
+        
+        /* OVERLAYS & SCROLLBAR 최적화 */
+        .progress-bar { position: fixed; top: 0; left: 280px; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--accent)); z-index: 200; transform-origin: left; transform: scaleX(0) translateZ(0); will-change: transform; transition: transform 0.1s linear; }
+        .section-counter { position: fixed; top: 24px; right: 32px; font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); background: var(--glass-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 30px; padding: 8px 18px; z-index: 200; box-shadow: var(--shadow-sm); transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease; }
+        .scroll-hint { position: fixed; bottom: 32px; right: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 30px; padding: 10px 20px; font-size: 13px; font-weight: 700; color: var(--text); font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px; z-index: 200; transition: opacity 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease; pointer-events: none; will-change: opacity, transform; box-shadow: var(--shadow-md); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) translateZ(0); } 50% { transform: translateY(-6px) translateZ(0); } }
 
-        /* 섹션 타이틀 */
-        .section-header {
-            margin: 40px 0 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-header h2 {
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .section-icon {
-            font-size: 1.4rem;
-        }
-
-        /* 카드 그리드 레이아웃 */
-        .rule-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        /* 규칙 카드 디자인 */
-        .rule-card {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(0,0,0,0); /* 기본 보더 투명 */
-            transition: transform var(--time) var(--ease), border-color var(--time) var(--ease), box-shadow var(--time) var(--ease);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* 호버 시 깔끔한 효과 */
-        .rule-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-
-        [data-theme="cream"] .rule-card:hover { border-color: var(--border); }
-        [data-theme="dark"] .rule-card:hover { border-color: #333; }
-
-        .card-top h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        .card-top p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            word-break: keep-all;
-        }
-
-        /* 처분 수위 뱃지 라인 */
-        .card-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        .punish-badge {
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 8px;
-            text-transform: uppercase;
-        }
-
-        .punish-time {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* 제재 등급별 색상 정의 */
-        .level-ban { border-left: 4px solid var(--danger); }
-        .level-ban:hover { border-color: var(--danger); }
-        .level-ban .punish-badge { background: rgba(255, 77, 79, 0.1); color: var(--danger); }
-        .level-ban .punish-time { color: var(--danger); }
-
-        .level-jail-high { border-left: 4px solid var(--warning); }
-        .level-jail-high:hover { border-color: var(--warning); }
-        .level-jail-high .punish-badge { background: rgba(250, 140, 22, 0.1); color: var(--warning); }
-
-        .level-jail-low { border-left: 4px solid var(--info); }
-        .level-jail-low:hover { border-color: var(--info); }
-        .level-jail-low .punish-badge { background: rgba(24, 144, 255, 0.1); color: var(--info); }
-
-        /* 비고 사항(회수 등) */
-        .note-text {
-            font-size: 0.8rem;
-            color: var(--accent-sub);
-            margin-top: 8px;
-            display: block;
-        }
-
-        /* 하단 가이드 */
-        .guide-box {
-            margin-top: 60px;
-            background: var(--bg-neutral);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border);
-        }
-
-        .guide-box h3 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-
-        .guide-box ul { list-style: none; }
-        .guide-box li {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            position: relative;
-            padding-left: 20px;
-        }
-
-        .guide-box li::before {
-            content: '▫';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 80px;
-            font-size: 0.85rem;
-            color: #999;
-        }
-
-        /* 모바일 최적화 */
-        @media (max-width: 600px) {
-            .container { padding: 20px 15px; }
-            header { margin-bottom: 30px; }
-            .brand-zone h1 { font-size: 1.3rem; }
-            .rule-grid { grid-template-columns: 1fr; }
-        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--bg); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="brand-zone">
-            <h1>Mochi <span>Staff</span></h1>
-            <p>스태프 전용 구금 가이드라인 (최종수정: 26.04.10)</p>
-        </div>
-        <div class="theme-switch" onclick="toggleTheme()" title="테마 변경">
-            <div class="icon icon-sun">☀️</div>
-            <div class="icon icon-moon">🌙</div>
-        </div>
-    </header>
+<div class="progress-bar" id="progressBar"></div>
+<div class="section-counter" id="sectionCounter">01 / 08</div>
+<div class="scroll-hint" id="scrollHint">↓ Scroll Down</div>
 
-    <div class="section-header">
-        <span class="section-icon">🚨</span>
-        <h2 style="color: var(--danger)">즉시 강력 처분 (BAN)</h2>
-    </div>
-    <div class="rule-grid">
-        <div class="rule-card level-ban">
-            <div class="card-top">
-                <h3>비인가 프로그램</h3>
-                <p>핵, 불법 프로그램 사용 적발 및 핵 무기 소지/습득 후 미반납 행위.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">CRITICAL</span>
-                <span class="punish-time">🔒 영구 BAN</span>
-            </div>
-        </div>
-        <div class="rule-card level-ban">
-            <div class="card-top">
-                <h3>관리자 기만 & 비하</h3>
-                <p>스태프 호출 시 거짓말, 증거 조작, 또는 서버 전체에 대한 악의적 비하.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">HIGH</span>
-                <span class="punish-time">14일 ~ 영구 BAN</span>
-            </div>
-        </div>
-        <div class="rule-card level-ban">
-            <div class="card-top">
-                <h3>고의적 RP 방해 / 악용</h3>
-                <p>범죄 후 고의 디컨/잠수, 이없살, 괴롭힘, 시스템/리붓 악용 취득.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">HIGH</span>
-                <span class="punish-time">최대 영구 BAN</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-header">
-        <span class="section-icon">⚖️</span>
-        <h2 style="color: var(--warning)">중범죄 및 시스템 악용 (JAIL)</h2>
-    </div>
-    <div class="rule-grid">
-        <div class="rule-card level-jail-high">
-            <div class="card-top">
-                <h3>분쟁 유도 / 분쟁성 발언</h3>
-                <p>고의적으로 분쟁을 유도하는 RP, 채팅 및 보이스를 통한 분쟁성 언행.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">MEDIUM</span>
-                <span class="punish-time">120분 ~ BAN</span>
-            </div>
-        </div>
-        <div class="rule-card level-jail-high">
-            <div class="card-top">
-                <h3>V-DM (로드킬 Bolling)</h3>
-                <p>차량으로 3인 이상 고의 로드킬. (교통사고 RP는 제외, 고의성 판단 필수)</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">MEDIUM</span>
-                <span class="punish-time">200분 ~ BAN</span>
-            </div>
-        </div>
-        <div class="rule-card level-jail-high">
-            <div class="card-top">
-                <h3>그래픽 패치 / 음성 변조</h3>
-                <p>금지된 그래픽 패치(1차) 및 마이크 음성 변조 프로그램 사용.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">MEDIUM</span>
-                <span class="punish-time">120분 ~ 300분</span>
-            </div>
-        </div>
-        <div class="rule-card level-jail-high">
-            <div class="card-top">
-                <h3>사후 브리핑 위반 / 제3자</h3>
-                <p>사망 후 RP 영향 발언, 마이크 미음소거, RP 중 제3자 개입.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">MEDIUM</span>
-                <span class="punish-time">120분 ~ 300분</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-header">
-        <span class="section-icon">🏢</span>
-        <h2 style="color: var(--info)">경범죄 및 팩션 규정 (ADMIN)</h2>
-    </div>
-    <div class="rule-grid">
-        <div class="rule-card level-jail-low">
-            <div class="card-top">
-                <h3>NON-RP / 법률 미숙지</h3>
-                <p>상황에 맞지 않는 비상식적 행동 및 서버 법률 위반 행위.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">LOW</span>
-                <span class="punish-time">60분 ~ 300분</span>
-            </div>
-        </div>
-        <div class="rule-card level-jail-low">
-            <div class="card-top">
-                <h3>팩션 권한 남용 / 횡령</h3>
-                <p>수갑/벌금 남용, 물품 무상 제공, 팩션 계좌 횡령 및 물품 미반납.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">ADMIN</span>
-                <div>
-                    <span class="punish-time">120분 ~ 300분</span>
-                    <span class="note-text">* 즉시 회수 처리 병행</span>
-                </div>
-            </div>
-        </div>
-        <div class="rule-card level-jail-low">
-            <div class="card-top">
-                <h3>보호구역 / 매너 위반</h3>
-                <p>보호구역 내 RP, 소음 공해, 헬기 저공 비행, 공무원 잠수.</p>
-            </div>
-            <div class="card-bottom">
-                <span class="punish-badge">LOW</span>
-                <span class="punish-time">경고 후 120분 ~</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="guide-box">
-        <h3>💡 필수 행동 수칙</h3>
-        <ul>
-            <li>모든 제재는 <strong>명확한 증거(영상, 로그)</strong>를 확보한 후 집행합니다.</li>
-            <li>본 가이드라인에 없는 내용은 독단적 판단 대신 <strong>어드민 스태프</strong>에게 문의합니다.</li>
-            <li>유저와의 인게임 말싸움은 금지하며, 이의 제기는 오직 <strong>고객센터</strong>로만 안내합니다.</li>
+<aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand"><div class="brand-dot"></div>MOCHI STAFF</div></div>
+    <nav class="sidebar-nav">
+        <div class="group-label blue-group" onclick="toggleMenu('edu-m')"><span>STAFF 교육 매뉴얼</span><span>▾</span></div>
+        <ul id="edu-m" class="submenu">
+            <li class="nav-item active-blue" onclick="scrollToSection('p-discord', this)">관리팀 디스코드</li>
+            <li class="nav-item" onclick="scrollToSection('p-1', this)">1. 서버내 실무 교육</li>
+            <li class="nav-item" onclick="scrollToSection('p-2', this)">2. 단축키 매뉴얼</li>
+            <li class="nav-item" onclick="scrollToSection('p-3', this)">3. 사이드공지 교육</li>
+            <li class="nav-item" onclick="scrollToSection('p-4', this)">4. 전체채팅 기본 교육</li>
+            <li class="nav-item" onclick="scrollToSection('p-5', this)">5. 디스코드 실무 교육</li>
         </ul>
+        <div class="group-label red-group" onclick="toggleMenu('warn-m')"><span>STAFF 경고 리스트</span><span>▾</span></div>
+        <ul id="warn-m" class="submenu">
+            <li class="nav-item" onclick="scrollToSection('w-1', this)">[경고 1회] 규정</li>
+            <li class="nav-item" onclick="scrollToSection('w-2', this)">[경고 2회] 규정</li>
+            <li class="nav-item" onclick="scrollToSection('w-3', this)">[해임 처리] 규정</li>
+        </ul>
+    </nav>
+    <div class="theme-toggle-area">
+        <button class="theme-btn" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span> <span id="theme-text">다크 모드</span>
+        </button>
     </div>
+</aside>
 
-    <footer>
-        &copy; 2026 모찌서버 ADMIN TEAM. Confidential for Staff.
-    </footer>
-</div>
+<main class="main-content" id="mainContent">
+    <section class="page-section" id="p-discord">
+        <div class="page-number">00 — 관리팀 디스코드</div>
+        <h1 class="page-title"><span class="blue">MOCHI</span> 서버 링크</h1>
+        <a class="link-card" href="http://discord.gg/TcbhYYfDVS" target="_blank"><div><div class="link-label">모찌서버 디스코드</div><div class="link-url">discord.gg/TcbhYYfDVS</div></div></a>
+        <a class="link-card" href="http://discord.gg/ZmxbDS8Fwa" target="_blank"><div><div class="link-label">모찌서버 팩션방</div><div class="link-url">discord.gg/ZmxbDS8Fwa</div></div></a>
+        <a class="link-card" href="http://discord.gg/c6VbVxAA5v" target="_blank"><div><div class="link-label">모찌서버 관리팀</div><div class="link-url">discord.gg/c6VbVxAA5v</div></div></a>
+        <a class="link-card" href="http://discord.gg/CdRFkNHBhm" target="_blank"><div><div class="link-label">모찌서버 고객센터</div><div class="link-url">discord.gg/CdRFkNHBhm</div></div></a>
+    </section>
+
+    <section class="page-section" id="p-1">
+        <div class="page-number">01 — STAFF 교육 매뉴얼</div>
+        <h1 class="page-title">서버내 실무 교육</h1>
+        <div class="section-header red">K - 관리 - 관리자 메뉴 각 기능</div>
+        <div class="block">
+            <p>1-1. #고유번호 살리기 <span class="tag-blue">(유저 요청이 있을 시)</span></p>
+            <p>1-2. #여러명 끌고가기 <span class="tag-red">(웬만하면 사용X)</span></p>
+            <p>1-3. [관리자] 무적모드 <span class="tag-red">(rp 및 좀비존, 사냥터 이용 시 사용 불가)</span></p>
+            <p>1-4. 보안 오브젝트 삭제 <span class="tag-red">(핵접속시 사용 이외 사용X)</span></p>
+        </div>
+        <div class="section-header red">K - 관리 - 이동 - 좌표 관련 기능</div>
+        <div class="block">
+            <p>2-1. 좌표 확인 <span class="tag-blue">(팩션요청으로 차량 비콘 및 옷장 비콘 생성요청시)</span></p>
+            <p>2-2. 좌표로 텔레포트 <span class="tag-red">(이용X)</span></p>
+        </div>
+        <div class="section-header red">K - 관리 - 이동 기능</div>
+        <div class="block">
+            <p>3-1. [스태프] 노클립 <span class="tag-red">(이용X — F2 노클립 사용)</span></p>
+            <p>3-2. 관리자 사유지 <span class="tag-blue">(수영하고 싶을 때 이용)</span></p>
+            <p>3-3. 혼자있고 싶은 곳 <span class="tag-blue">(우울하고 힘들 때 이용)</span></p>
+            <p>3-4. 관리자 술집 <span class="tag-blue">(2층에서 스태프 스킨 이용 가능)</span></p>
+        </div>
+        <div class="section-header red">K - 관리 - 역할 관리 기능</div>
+        <div class="block">
+            <p>4-1. 권한 추가 <span class="tag-blue">(팩션 직급 추가)</span></p>
+            <p>4-2. 권한 삭제 <span class="tag-blue">(팩션 직급 제거)</span></p>
+        </div>
+        <div class="section-header red">K - 관리 - 밴 & 추방 기능</div>
+        <div class="block">
+            <p>5-1. [관리자] 구금 — 관리자 구금 넣는 것</p>
+            <p>5-2. [관리자] 구금해제 — 관리자 구금 해제</p>
+            <p>5-5. 플레이어 게임추방 <span class="tag-red">(웬만하면 F7 눌러서 이용)</span></p>
+            <p>5-6. 차단 <span class="tag-blue">(팩션해체 및 차단해야 되는 유저들에게 이용)</span></p>
+            <p>5-7. 차단(해제) — 차단 해제 시 이용</p>
+            <p>5-8. [추노기록] 작성 <span class="tag-blue">(관구 및 물품회수 등 유저가 없을 때)</span></p>
+            <p>5-9. [추노기록] 삭제 — 완료 시 해제 <span class="tag-red">[꼭 삭제하기]</span></p>
+        </div>
+    </section>
+
+    <section class="page-section" id="p-2">
+        <div class="page-number">02 — STAFF 교육 매뉴얼</div>
+        <h1 class="page-title">단축키 매뉴얼</h1>
+        <div class="section-header blue">넘버패드 단축키</div>
+        <div class="shortcut-grid">
+            <div class="sc-key">NUM 7</div><div class="sc-desc">끌고가기</div>
+            <div class="sc-key">NUM 4</div><div class="sc-desc">수갑묶기</div>
+            <div class="sc-key">ALT + NUM 7</div><div class="sc-desc">오브젝트 및 치장 제거</div>
+            <div class="sc-key">ALT + NUM 8</div><div class="sc-desc">차량 제거</div>
+        </div>
+        <div class="block" style="border-left: 4px solid var(--red); background: var(--red-dim);">
+            <p style="color: var(--red); font-weight: 700; font-size: 14px;">⚠ ALT+(+/−)로 삭제 범위 조절 가능</p>
+        </div>
+        <div class="section-header blue">F7 단축키</div>
+        <div class="block">
+            <p>1. 물품회수 진행 시 F7 누른 후 <strong>"유저관리"</strong>에서 물품회수 진행</p>
+            <p>2. 메광으로, 시청으로 누르면 각각 위치로 TP됨</p>
+            <img src="https://cdn.discordapp.com/attachments/1230800435540000781/1500876674835677325/2026-05-05_000510.png?ex=69fa07d4&is=69f8b654&hm=0abe9a3e42484b56180faa2219caf4ab257bb0dcfcb5a4636a9821d3571476e5&" alt="F7 Menu" class="guide-img">
+        </div>
+    </section>
+
+    <section class="page-section" id="p-3">
+        <div class="page-number">03 — STAFF 교육 매뉴얼</div>
+        <h1 class="page-title">사이드공지 교육</h1>
+        <div class="section-header blue">명령어</div>
+        <div class="block" style="font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); text-align: center; letter-spacing: 0.05em;">
+            /관리팀 &lt;말할 내용&gt;
+        </div>
+        <div class="section-header red">원칙</div>
+        <div class="block"><p class="tag-red" style="text-align: center; font-size: 16px;">"메인광장 및 메차 인근 소음공해 관련 사이드공지 1회로 진행"</p></div>
+        <div class="section-header blue">예시</div>
+        <div class="block" style="font-family: 'Space Mono', monospace; color: var(--green); text-align: center; font-size: 15px;">
+            /관리팀 메인광장 근처에서 소음공해 자제 바랍니다
+        </div>
+    </section>
+
+    <section class="page-section" id="p-4">
+        <div class="page-number">04 — STAFF 교육 매뉴얼</div>
+        <h1 class="page-title">전체채팅 기본 교육</h1>
+            <div class="block" style="border: 2px solid var(--red); background: var(--red-dim); text-align: center; box-shadow: 0 0 20px var(--red-glow);">
+                <span class="tag-red" style="font-size: 16px; display: block; margin-bottom: 8px;">인게임 내 유저들과 반말 및 친목 절대금지 [발각 시 즉시해임]</span>
+                <p style="color: var(--text); opacity: 0.6; font-size: 13px; font-weight: 500;">
+                (기본적인 인사는 가능하다 단 사적으로 이야기 하는 경우 친목으로 간주한다.)
+                </p>
+            </div>
+        <div class="section-header blue">원칙</div>
+        <div class="block" style="text-align: center; padding: 40px;">
+            <p style="font-size: 15px; color: var(--muted); margin-bottom: 12px;">유저에게 TP 또는 소환을 하게 될 경우</p>
+            <p class="tag-red" style="font-size: 20px;">3회 공지 후 진행</p>
+        </div>
+        <div class="section-header blue">예시 — 유저 확인</div>
+        <div class="block">
+            <div class="chat-line">수댕이 1973님 계신가요? (x3)</div>
+            <div class="chat-separator"></div>
+            <div class="chat-line">수댕이 1973님 RP중이신가요? (x3)</div>
+            <div class="chat-separator"></div>
+            <div class="chat-line">수댕이 1973님 물품회수를 위해 잠시 TP타겠습니다. (x3)</div>
+        </div>
+    </section>
+
+    <section class="page-section" id="p-5">
+        <div class="page-number">05 — STAFF 교육 매뉴얼</div>
+        <h1 class="page-title">디스코드 실무 교육</h1>
+        <div class="block" style="text-align: center; border-color: var(--red); background: var(--red-dim);"><span class="tag-red" style="font-size: 15px;">모든 디스코드 채널은 수시로 확인바랍니다.</span></div>
+        
+        <div class="section-header blue">본서버 디스코드</div>
+        <div class="block">
+            <p>1. 뉴비재인증: 서버목록 / 인게임화면 / 별명양식 충족 시 권한 지급</p>
+            <p>2. 권한삭제: 무조건 팩션쿨타임 권한 지급</p>
+        </div>
+        
+        <div class="section-header blue">관리팀 디스코드</div>
+        <div class="block">
+            <p>1. 물품회수 완료 시 <span class="tag-blue">[물품회수]</span> 채널 작성</p>
+            <p>4. 개인사정 미접속 시 <span class="tag-blue">[휴가신청]</span> 필수 작성</p>
+            <p>5. 출퇴근 시 <span class="tag-green">/출퇴근</span> 명령어 사용</p>
+            <p>6. 사건처리 완료 시 <span class="tag-green">/사처등록</span> 명령어 사용</p>
+        </div>
+
+        <div class="section-header blue">팩션 디스코드</div>
+        <div class="block">
+            <p>팩션 디스코드방은 담당 관리진이 아닐 경우 할 일이 없으나 가끔 패치요청이 올라올 경우 해당 요청만 관리팀 디스코드 패치요청에 올리기</p>
+        </div>
+
+        <div class="section-header blue">고객센터 디스코드</div>
+        <div class="block">
+            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">1. 문의가 시작되었을 경우</p>
+            <div class="chat-line">안녕하세요, 모찌서버 운영팀 OOO입니다 무엇을 도와드릴까요?</div>
+            <div class="chat-separator"></div>
+
+            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">2. 문의 대응 도중 모르는 상황이 있을 경우</p>
+            <div class="chat-line">잠시만 기다려주시면 답변 도와드리겠습니다.</div>
+            <p style="margin-top: 8px; font-size: 13px;">위에 채팅 작성 후 (<span class="tag-red">! @모찌 운영팀</span> 태그)</p>
+            <div class="chat-separator"></div>
+
+            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">3. 오래된 문의를 늦게 답변할 경우</p>
+            <div class="chat-line">답변이 늦어져 죄송합니다. &lt;해당 상황에 맞는 답변&gt;</div>
+            <div class="chat-separator"></div>
+
+            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">4. 문의 종료할 때</p>
+            <div class="chat-line">추가 문의사항 있으신가요?</div>
+            <p style="margin-top: 8px; font-size: 13px;">작성 이후 문의사항이 없을 때</p>
+            <div class="chat-line">문의 종료 하겠습니다.</div>
+            <p style="margin-top: 8px; font-size: 13px;">이후 (<span class="tag-red">.문의종료</span>) 작성</p>
+        </div>
+    </section>
+
+    <section class="page-section" id="w-1">
+        <div class="page-number">06 — STAFF 경고 리스트</div>
+        <h1 class="page-title"><span class="red">경고 1회</span> 규정</h1>
+        <div class="warn-card"><div><div class="warn-card-title">서버 규칙 미숙지 및 규정 위반</div></div><div class="warn-badge badge-1">경고 1회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">신고 처리 지연 또는 무시</div></div><div class="warn-badge badge-1">경고 1회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">사건 처리 미숙 / 오판</div></div><div class="warn-badge badge-1">경고 1회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">디스코드 출퇴근부 관리 미흡</div></div><div class="warn-badge badge-1">경고 1회</div></div>  
+        <div class="warn-card"><div><div class="warn-card-title">무단 잠수</div></div><div class="warn-badge badge-1">경고 1회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">허위 보고 / 거짓말</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
+        <div class="warn-card"><div><div class="warn-card-title">팩션물품 판매</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
+        <div class="warn-card"><div><div class="warn-card-title">임의판단</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
+        <div class="warn-card"><div><div class="warn-card-title">피크타임 RP참여</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
+        <div class="warn-card"><div><div class="warn-card-title">영상 미녹화</div><div class="warn-notice">서버 로딩화면부터 필수 촬영, 최소 이틀 보관 바랍니다.</div></div><div class="warn-badge badge-1">경고 1회</div></div>
+    </section>
+
+    <section class="page-section" id="w-2">
+        <div class="page-number">07 — STAFF 경고 리스트</div>
+        <h1 class="page-title"><span class="red">경고 2회</span> 규정</h1>
+        <div class="warn-card"><div><div class="warn-card-title">이유 없는 밴 / 킥 / 텔포 사용</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">특정 유저 편파 처리</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">개인 감정으로 제재 진행</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">관리자 지시 불이행</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">유저에게 욕설 / 비하 발언</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">불친절한 대응</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">디스코드 내 분쟁 유발</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">지인 특혜 제공 정보 유출 [내부 규정, 로그 등]</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">이유 없는 노클립 남용</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">업무 태도 불량 (불성실, 무응답 등)</div></div><div class="warn-badge badge-2">경고 2회</div></div>
+    </section>
+
+    <section class="page-section" id="w-3">
+        <div class="page-number">08 — STAFF 경고 리스트</div>
+        <h1 class="page-title"><span class="red">해임 처리</span> 규정</h1>
+        <div class="warn-card"><div><div class="warn-card-title">부계정 악용</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">활동 관련 장기 미접속 [일주일 이상]</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">서버 이미지 훼손</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">관리자 품위 손상</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">권력남용</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">유저와 친목</div><div class="warn-notice">4. 전체채팅 기본 교육 1-1과 동일</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">권한 넣어서 몰래 총기 빼기</div></div><div class="warn-badge dismiss">해임</div></div>
+        <div class="warn-card"><div><div class="warn-card-title">관리자 및 운영자 기만</div></div><div class="warn-badge dismiss">해임</div></div>
+    </section>
+</main>
 
 <script>
-    // 테마 토글 함수
+    const sections = document.querySelectorAll('.page-section');
+    const navItems = document.querySelectorAll('.nav-item');
+    const main = document.getElementById('mainContent');
+    const progress = document.getElementById('progressBar');
+    const counter = document.getElementById('sectionCounter');
+    const hint = document.getElementById('scrollHint');
+    const html = document.documentElement;
+
     function toggleTheme() {
-        const html = document.documentElement;
         const currentTheme = html.getAttribute('data-theme');
-        const newTheme = (currentTheme === 'cream') ? 'dark' : 'cream';
-        
-        html.setAttribute('data-theme', newTheme);
-        
-        // 유저 선택 저장 (브라우저 종료 후에도 유지)
-        localStorage.setItem('mochi_theme', newTheme);
+        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(nextTheme);
     }
 
-    // 초기 로딩 시 저장된 테마 불러오기
-    (function() {
-        const savedTheme = localStorage.getItem('mochi_theme');
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
+    function applyTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('mochi-theme', theme);
+        const icon = document.getElementById('theme-icon');
+        const text = document.getElementById('theme-text');
+        
+        if (theme === 'dark') {
+            icon.textContent = '☀️';
+            text.textContent = '라이트 모드';
+        } else {
+            icon.textContent = '🌙';
+            text.textContent = '다크 모드';
         }
-    })();
-</script>
+    }
 
+    const savedTheme = localStorage.getItem('mochi-theme') || 'light';
+    applyTheme(savedTheme);
+
+    function toggleMenu(id) { document.getElementById(id).classList.toggle('collapsed'); }
+
+    function scrollToSection(id, el) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const navMap = {};
+    navItems.forEach(item => {
+        const match = item.getAttribute('onclick').match(/'([^']+)'/);
+        if (match) navMap[match[1]] = item;
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                const id = entry.target.id;
+                
+                navItems.forEach(item => item.classList.remove('active-blue', 'active-red'));
+                if (navMap[id]) {
+                    navMap[id].classList.add(id.startsWith('w-') ? 'active-red' : 'active-blue');
+                }
+                
+                const idx = Array.from(sections).indexOf(entry.target) + 1;
+                counter.textContent = `${String(idx).padStart(2, '0')} / ${String(sections.length).padStart(2, '0')}`;
+            }
+        });
+    }, { threshold: 0.3, root: main });
+
+    sections.forEach(s => observer.observe(s));
+
+    let isScrolling = false;
+    main.addEventListener('scroll', () => {
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                const scrollable = main.scrollHeight - main.clientHeight;
+                const p = scrollable > 0 ? (main.scrollTop / scrollable) : 0;
+                
+                progress.style.transform = `scaleX(${p}) translateZ(0)`;
+                hint.style.opacity = main.scrollTop > 80 ? '0' : '1';
+                
+                isScrolling = false;
+            });
+            isScrolling = true;
+        }
+    }, { passive: true });
+</script>
 </body>
 </html>
