@@ -1,463 +1,166 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCHI STAFF SYSTEM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>모찌서버 스태프 관리 시스템</title>
     <style>
-        /* [성능 최적화 & UX/UI 고도화] 테마 변수 시스템 */
-        :root[data-theme="light"] {
-            --bg: #ffffff; 
-            --bg2: #f8f9fa; 
-            --bg3: #f1f3f5; 
-            --surface: #ffffff;
-            --border: #e9ecef; 
-            --blue: #2563eb; --blue-dim: rgba(37, 99, 235, 0.08); --blue-glow: rgba(37, 99, 235, 0.2);
-            --red: #dc2626; --red-dim: rgba(220, 38, 38, 0.08); --red-glow: rgba(220, 38, 38, 0.2);
-            --green: #16a34a;
-            --text: #111827; 
-            --muted: #6b7280; 
-            --accent: #8b5cf6;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
-            --shadow-hover: 0 12px 32px rgba(0,0,0,0.1);
-            --glass-bg: rgba(255, 255, 255, 0.8);
+        /* [UX] 디스코드 다크모드 디자인 시스템 변수 */
+        :root {
+            --bg-main: #313338;      /* 디스코드 메인 배경 */
+            --card-bg: #2b2d31;      /* 디스코드 카드/서브 배경 */
+            --text-main: #dbdee1;    /* 디스코드 기본 텍스트 */
+            --text-sub: #949ba4;     /* 디스코드 서브 텍스트 */
+            --border: #1e1f22;       /* 디스코드 테두리 */
+            --tab-active: #404249;   /* 디스코드 활성화 탭 */
+            
+            --accent-orange: #faa61a; /* 디스코드 경고 색상 */
+            --accent-red: #ed4245;    /* 디스코드 위험 색상 */
+            --container-width: 1000px;
         }
 
-        :root[data-theme="dark"] {
-            --bg: #000000;
-            --bg2: #09090b; 
-            --bg3: #18181b; 
-            --surface: #0f0f11; 
-            --border: #27272a; 
-            --blue: #3b82f6; --blue-dim: rgba(59, 130, 246, 0.15); --blue-glow: rgba(59, 130, 246, 0.3);
-            --red: #ef4444; --red-dim: rgba(239, 68, 68, 0.15); --red-glow: rgba(239, 68, 68, 0.3);
-            --green: #22c55e;
-            --text: #f9fafb; 
-            --muted: #a1a1aa; 
-            --accent: #a78bfa;
-            --shadow-sm: 0 4px 12px rgba(0,0,0,0.5);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.6);
-            --shadow-hover: 0 12px 32px rgba(0,0,0,0.8);
-            --glass-bg: rgba(9, 9, 11, 0.8);
+        /* [UX] 기본 스타일 및 애니메이션 최적화 (코드 단축) */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro KR", sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        
+        .app-wrapper { width: 100%; max-width: var(--container-width); padding: 40px 24px; transition: .3s ease; }
+
+        header { text-align: center; margin-bottom: 48px; }
+        header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; color: #f2f3f5; }
+        header p { font-size: 1.1rem; color: var(--text-sub); margin-top: 8px; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            header p { font-size: 0.9rem; }
         }
 
-        /* 렌더링 최적화 기본 설정 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; overflow: hidden; transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        /* [UX] 디스코드 스타일 탭 메뉴 */
+        .nav-scroller { position: sticky; top: 20px; z-index: 1000; margin-bottom: 40px; display: flex; justify-content: center; }
+        .tab-nav { display: inline-flex; background: var(--card-bg); padding: 6px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .tab-btn { border: none; background: none; padding: 12px 24px; font-size: 15px; font-weight: 600; color: var(--text-sub); cursor: pointer; border-radius: 8px; transition: .2s; }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { background: var(--tab-active); color: #fff; }
 
-        /* SIDEBAR */
-        .sidebar { width: 280px; background: var(--bg2); border-right: 1px solid var(--border); height: 100vh; overflow-y: auto; display: flex; flex-direction: column; z-index: 100; contain: strict; transition: background-color 0.4s ease, border-color 0.4s ease; }
-        .sidebar-header { padding: 28px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10; transition: background-color 0.4s ease, border-color 0.4s ease; }
-        .sidebar-brand { font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: 0.15em; display: flex; align-items: center; gap: 12px; }
-        .brand-dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; box-shadow: 0 0 12px var(--blue-glow); }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1) translateZ(0); } 50% { opacity: 0.5; transform: scale(0.85) translateZ(0); } }
+        /* [UX] 콘텐츠 영역 및 애니메이션 */
+        .tab-content { display: none; animation: slideUp .4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 850px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        /* [UX] 디스코드 스타일 카드 패널 */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: transform .2s; }
+        .card:hover { transform: translateY(-3px); }
+
+        .item-row { padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; }
+        .item-row:first-child { padding-top: 0; }
+        .item-row:last-child { border-bottom: none; padding-bottom: 0; }
         
-        .sidebar-nav { padding: 20px 16px; flex: 1; }
-        .group-label { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 8px 12px; margin: 16px 0 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: color 0.2s ease, opacity 0.2s ease; }
-        .blue-group { color: var(--blue); } .red-group { color: var(--red); }
-        .group-label:hover { opacity: 0.8; }
-        .submenu { list-style: none; margin-bottom: 12px; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; max-height: 1000px; will-change: max-height; }
-        .submenu.collapsed { max-height: 0; }
+        .item-row strong { font-size: 16px; font-weight: 600; flex: 1; line-height: 1.4; }
+        .item-row small { display: block; color: var(--text-sub); font-size: 13px; margin-top: 4px; font-weight: 400; }
 
-        /* 메모리 최적화: transition: all -> 특정 속성만 지정 */
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; font-size: 13.5px; color: var(--muted); cursor: pointer; border-radius: 10px; margin-bottom: 4px; transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease; border: 1px solid transparent; font-weight: 500; }
-        .nav-item::before { content: ''; width: 4px; height: 4px; background: var(--muted); border-radius: 50%; flex-shrink: 0; transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; opacity: 0.5; }
-        .nav-item:hover { background-color: var(--bg3); color: var(--text); transform: translateX(4px) translateZ(0); }
-        .nav-item:hover::before { opacity: 1; transform: scale(1.5) translateZ(0); }
-        .nav-item.active-blue { background-color: var(--blue-dim); color: var(--blue); border-color: rgba(37, 99, 235, 0.2); font-weight: 700; box-shadow: inset 0 0 0 1px var(--blue-dim); }
-        .nav-item.active-blue::before { background-color: var(--blue); opacity: 1; transform: scale(1.5) translateZ(0); box-shadow: 0 0 8px var(--blue-glow); }
-        .nav-item.active-red { background-color: var(--red-dim); color: var(--red); border-color: rgba(220, 38, 38, 0.2); font-weight: 700; box-shadow: inset 0 0 0 1px var(--red-dim); }
-        .nav-item.active-red::before { background-color: var(--red); opacity: 1; transform: scale(1.5) translateZ(0); box-shadow: 0 0 8px var(--red-glow); }
+        /* 해임 섹션 디스코드 Danger 존 스타일 */
+        .dismiss-accent { border: 1px solid var(--accent-red); background: rgba(237, 66, 69, 0.05); }
+        .dismiss-accent strong { color: var(--accent-red); }
 
-        .theme-toggle-area { padding: 20px; border-top: 1px solid var(--border); background: var(--bg2); transition: background-color 0.4s ease, border-color 0.4s ease; }
-        .theme-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, background-color 0.3s ease; box-shadow: var(--shadow-sm); }
-        .theme-btn:hover { border-color: var(--blue); transform: translateY(-2px) translateZ(0); box-shadow: var(--shadow-md); color: var(--blue); }
-
-        /* MAIN CONTENT */
-        .main-content { flex: 1; height: 100vh; overflow-y: auto; scroll-behavior: smooth; background: var(--bg); contain: strict; position: relative; }
-        .page-section { min-height: 100vh; padding: 80px 60px; border-bottom: 1px solid var(--border); opacity: 0; transform: translateY(30px) translateZ(0); transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; max-width: 1200px; margin: 0 auto; }
-        .page-section.visible { opacity: 1; transform: translateY(0) translateZ(0); }
-        .page-number { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.2em; margin-bottom: 16px; font-weight: 700; }
-        .page-title { font-size: 36px; font-weight: 900; margin-bottom: 48px; line-height: 1.3; letter-spacing: -0.02em; }
-        .blue { color: var(--blue); } .red { color: var(--red); }
-
-        /* BLOCK & UI */
-        .block { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px 36px; margin-bottom: 20px; line-height: 1.8; font-size: 14.5px; box-shadow: var(--shadow-sm); transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease, border-color 0.4s ease; }
-        .block:hover { box-shadow: var(--shadow-md); }
-        .block p { margin-bottom: 8px; }
-        .block p:last-child { margin-bottom: 0; }
-        
-        .section-header { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 16px; border-radius: 8px; margin: 32px 0 16px; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
-        .section-header.blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(37, 99, 235, 0.2); }
-        .section-header.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(220, 38, 38, 0.2); }
-
-        .tag-red { color: var(--red); font-weight: 700; } .tag-blue { color: var(--blue); font-weight: 700; }
-        .tag-green { color: var(--green); font-weight: 700; }
-
-        /* LINK CARD GPU 최적화 */
-        .link-card { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; text-decoration: none; color: inherit; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
-        .link-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--blue); transform: scaleY(0) translateZ(0); transition: transform 0.3s ease; transform-origin: bottom; }
-        .link-card:hover { border-color: var(--blue); transform: translateY(-4px) translateZ(0); box-shadow: var(--shadow-hover); background-color: var(--bg); }
-        .link-card:hover::before { transform: scaleY(1) translateZ(0); }
-        .link-card::after { content: '→'; font-family: 'Space Mono', monospace; color: var(--muted); font-size: 18px; font-weight: 700; transition: transform 0.3s ease, color 0.3s ease; }
-        .link-card:hover::after { color: var(--blue); transform: translateX(4px) translateZ(0); }
-        .link-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
-        .link-url { font-size: 14px; font-family: 'Space Mono', monospace; color: var(--text); font-weight: 700; }
-
-        /* SHORTCUT GRID */
-        .shortcut-grid { display: grid; grid-template-columns: auto 1fr; gap: 16px; background: transparent; margin-bottom: 24px; padding: 4px; }
-        .sc-key, .sc-desc { padding: 14px 20px; font-size: 14.5px; border-radius: 10px; display: flex; align-items: center; transition: background-color 0.4s ease, border-color 0.4s ease; }
-        .sc-key { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); background: var(--surface); border: 1px solid var(--border); border-bottom: 3px solid var(--border); white-space: nowrap; transition: transform 0.1s ease, border-bottom-width 0.1s ease, margin-bottom 0.1s ease, background-color 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .sc-desc { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
-        .sc-key:active { transform: translateY(2px) translateZ(0); border-bottom-width: 1px; margin-bottom: 2px; }
-
-        /* WARN CARD */
-        .warn-card { border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; background: var(--surface); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease; gap: 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
-        .warn-card:hover { border-color: var(--red); transform: translateY(-3px) scale(1.01) translateZ(0); box-shadow: var(--shadow-hover); }
-        .warn-card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-        
-        .warn-badge { border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 6px; }
-        .warn-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
-        .warn-badge.badge-1 { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
-        .warn-badge.badge-1::before { background: #16a34a; box-shadow: 0 0 8px rgba(22, 163, 74, 0.5); }
-        .warn-badge.badge-2 { background: rgba(245, 158, 11, 0.1); color: #d97706; }
-        .warn-badge.badge-2::before { background: #d97706; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-        .warn-badge.dismiss { background: var(--red-dim); color: var(--red); border: 1px solid rgba(220, 38, 38, 0.3); }
-        .warn-badge.dismiss::before { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
-        
-        .warn-notice { background: var(--bg2); border-left: 3px solid var(--red); border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13px; color: var(--muted); margin-top: 12px; line-height: 1.6; transition: background-color 0.4s ease, border-color 0.4s ease; }
-        
-        .guide-img { width: 100%; max-width: 520px; display: block; margin: 20px auto 0; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-md); transition: transform 0.3s ease, border-color 0.4s ease; }
-        .guide-img:hover { transform: scale(1.02) translateZ(0); }
-        
-        .chat-line { font-size: 15px; color: var(--green); font-weight: 500; line-height: 1.8; padding: 6px 12px; background: rgba(22, 163, 74, 0.05); border-radius: 8px; margin: 4px 0; border-left: 2px solid var(--green); }
-        .chat-separator { height: 1px; background: var(--border); margin: 20px 0; transition: background-color 0.4s ease; }
-        
-        /* OVERLAYS & SCROLLBAR 최적화 */
-        .progress-bar { position: fixed; top: 0; left: 280px; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--accent)); z-index: 200; transform-origin: left; transform: scaleX(0) translateZ(0); will-change: transform; transition: transform 0.1s linear; }
-        .section-counter { position: fixed; top: 24px; right: 32px; font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); background: var(--glass-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 30px; padding: 8px 18px; z-index: 200; box-shadow: var(--shadow-sm); transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease; }
-        .scroll-hint { position: fixed; bottom: 32px; right: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 30px; padding: 10px 20px; font-size: 13px; font-weight: 700; color: var(--text); font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px; z-index: 200; transition: opacity 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease; pointer-events: none; will-change: opacity, transform; box-shadow: var(--shadow-md); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0) translateZ(0); } 50% { transform: translateY(-6px) translateZ(0); } }
-
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--bg); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+        .indicator { width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 6px; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
-<div class="progress-bar" id="progressBar"></div>
-<div class="section-counter" id="sectionCounter">01 / 08</div>
-<div class="scroll-hint" id="scrollHint">↓ Scroll Down</div>
+<div class="app-wrapper">
+    <header>
+        <h1>Management</h1>
+        <p>MOCHI SERVER STAFF GUIDELINE</p>
+    </header>
 
-<aside class="sidebar">
-    <div class="sidebar-header"><div class="sidebar-brand"><div class="brand-dot"></div>MOCHI STAFF</div></div>
-    <nav class="sidebar-nav">
-        <div class="group-label blue-group" onclick="toggleMenu('edu-m')"><span>STAFF 교육 매뉴얼</span><span>▾</span></div>
-        <ul id="edu-m" class="submenu">
-            <li class="nav-item active-blue" onclick="scrollToSection('p-discord', this)">관리팀 디스코드</li>
-            <li class="nav-item" onclick="scrollToSection('p-1', this)">1. 서버내 실무 교육</li>
-            <li class="nav-item" onclick="scrollToSection('p-2', this)">2. 단축키 매뉴얼</li>
-            <li class="nav-item" onclick="scrollToSection('p-3', this)">3. 사이드공지 교육</li>
-            <li class="nav-item" onclick="scrollToSection('p-4', this)">4. 전체채팅 기본 교육</li>
-            <li class="nav-item" onclick="scrollToSection('p-5', this)">5. 디스코드 실무 교육</li>
-        </ul>
-        <div class="group-label red-group" onclick="toggleMenu('warn-m')"><span>STAFF 경고 리스트</span><span>▾</span></div>
-        <ul id="warn-m" class="submenu">
-            <li class="nav-item" onclick="scrollToSection('w-1', this)">[경고 1회] 규정</li>
-            <li class="nav-item" onclick="scrollToSection('w-2', this)">[경고 2회] 규정</li>
-            <li class="nav-item" onclick="scrollToSection('w-3', this)">[해임 처리] 규정</li>
-        </ul>
-    </nav>
-    <div class="theme-toggle-area">
-        <button class="theme-btn" onclick="toggleTheme()">
-            <span id="theme-icon">🌙</span> <span id="theme-text">다크 모드</span>
-        </button>
+    <!-- 탭 내비게이션 -->
+    <div class="nav-scroller">
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'rules')">기본 원칙</button>
+            <button class="tab-btn" onclick="openTab(event, 'step1')">경고 1회</button>
+            <button class="tab-btn" onclick="openTab(event, 'step2')">경고 2회</button>
+            <button class="tab-btn" onclick="openTab(event, 'dismiss')">즉시 해임</button>
+        </nav>
     </div>
-</aside>
 
-<main class="main-content" id="mainContent">
-    <section class="page-section" id="p-discord">
-        <div class="page-number">00 — 관리팀 디스코드</div>
-        <h1 class="page-title"><span class="blue">MOCHI</span> 서버 링크</h1>
-        <a class="link-card" href="http://discord.gg/TcbhYYfDVS" target="_blank"><div><div class="link-label">모찌서버 디스코드</div><div class="link-url">discord.gg/TcbhYYfDVS</div></div></a>
-        <a class="link-card" href="http://discord.gg/ZmxbDS8Fwa" target="_blank"><div><div class="link-label">모찌서버 팩션방</div><div class="link-url">discord.gg/ZmxbDS8Fwa</div></div></a>
-        <a class="link-card" href="http://discord.gg/c6VbVxAA5v" target="_blank"><div><div class="link-label">모찌서버 관리팀</div><div class="link-url">discord.gg/c6VbVxAA5v</div></div></a>
-        <a class="link-card" href="http://discord.gg/CdRFkNHBhm" target="_blank"><div><div class="link-label">모찌서버 고객센터</div><div class="link-url">discord.gg/CdRFkNHBhm</div></div></a>
-    </section>
+    <!-- 콘텐츠: 기본 원칙 -->
+    <div id="rules" class="tab-content active">
+        <div class="card" style="text-align: center; padding: 60px 24px;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 16px;">품위 유지 및 성실성</h2>
+            <p style="color: var(--text-sub); line-height: 1.8; max-width: 500px; margin: 0 auto;">
+                경고 3회 누적 시 직책 박탈을 원칙으로 하며, 모든 징계는 관리진 회의를 거쳐 삭감 또는 강화될 수 있습니다.
+            </p>
+        </div>
+    </div>
 
-    <section class="page-section" id="p-1">
-        <div class="page-number">01 — STAFF 교육 매뉴얼</div>
-        <h1 class="page-title">서버내 실무 교육</h1>
-        <div class="section-header red">K - 관리 - 관리자 메뉴 각 기능</div>
-        <div class="block">
-            <p>1-1. #고유번호 살리기 <span class="tag-blue">(유저 요청이 있을 시)</span></p>
-            <p>1-2. #여러명 끌고가기 <span class="tag-red">(웬만하면 사용X)</span></p>
-            <p>1-3. [관리자] 무적모드 <span class="tag-red">(rp 및 좀비존, 사냥터 이용 시 사용 불가)</span></p>
-            <p>1-4. 보안 오브젝트 삭제 <span class="tag-red">(핵접속시 사용 이외 사용X)</span></p>
-        </div>
-        <div class="section-header red">K - 관리 - 이동 - 좌표 관련 기능</div>
-        <div class="block">
-            <p>2-1. 좌표 확인 <span class="tag-blue">(팩션요청으로 차량 비콘 및 옷장 비콘 생성요청시)</span></p>
-            <p>2-2. 좌표로 텔레포트 <span class="tag-red">(이용X)</span></p>
-        </div>
-        <div class="section-header red">K - 관리 - 이동 기능</div>
-        <div class="block">
-            <p>3-1. [스태프] 노클립 <span class="tag-red">(이용X — F2 노클립 사용)</span></p>
-            <p>3-2. 관리자 사유지 <span class="tag-blue">(수영하고 싶을 때 이용)</span></p>
-            <p>3-3. 혼자있고 싶은 곳 <span class="tag-blue">(우울하고 힘들 때 이용)</span></p>
-            <p>3-4. 관리자 술집 <span class="tag-blue">(2층에서 스태프 스킨 이용 가능)</span></p>
-        </div>
-        <div class="section-header red">K - 관리 - 역할 관리 기능</div>
-        <div class="block">
-            <p>4-1. 권한 추가 <span class="tag-blue">(팩션 직급 추가)</span></p>
-            <p>4-2. 권한 삭제 <span class="tag-blue">(팩션 직급 제거)</span></p>
-        </div>
-        <div class="section-header red">K - 관리 - 밴 & 추방 기능</div>
-        <div class="block">
-            <p>5-1. [관리자] 구금 — 관리자 구금 넣는 것</p>
-            <p>5-2. [관리자] 구금해제 — 관리자 구금 해제</p>
-            <p>5-5. 플레이어 게임추방 <span class="tag-red">(웬만하면 F7 눌러서 이용)</span></p>
-            <p>5-6. 차단 <span class="tag-blue">(팩션해체 및 차단해야 되는 유저들에게 이용)</span></p>
-            <p>5-7. 차단(해제) — 차단 해제 시 이용</p>
-            <p>5-8. [추노기록] 작성 <span class="tag-blue">(관구 및 물품회수 등 유저가 없을 때)</span></p>
-            <p>5-9. [추노기록] 삭제 — 완료 시 해제 <span class="tag-red">[꼭 삭제하기]</span></p>
-        </div>
-    </section>
-
-    <section class="page-section" id="p-2">
-        <div class="page-number">02 — STAFF 교육 매뉴얼</div>
-        <h1 class="page-title">단축키 매뉴얼</h1>
-        <div class="section-header blue">넘버패드 단축키</div>
-        <div class="shortcut-grid">
-            <div class="sc-key">NUM 7</div><div class="sc-desc">끌고가기</div>
-            <div class="sc-key">NUM 4</div><div class="sc-desc">수갑묶기</div>
-            <div class="sc-key">ALT + NUM 7</div><div class="sc-desc">오브젝트 및 치장 제거</div>
-            <div class="sc-key">ALT + NUM 8</div><div class="sc-desc">차량 제거</div>
-        </div>
-        <div class="block" style="border-left: 4px solid var(--red); background: var(--red-dim);">
-            <p style="color: var(--red); font-weight: 700; font-size: 14px;">⚠ ALT+(+/−)로 삭제 범위 조절 가능</p>
-        </div>
-        <div class="section-header blue">F7 단축키</div>
-        <div class="block">
-            <p>1. 물품회수 진행 시 F7 누른 후 <strong>"유저관리"</strong>에서 물품회수 진행</p>
-            <p>2. 메광으로, 시청으로 누르면 각각 위치로 TP됨</p>
-            <img src="https://cdn.discordapp.com/attachments/1230800435540000781/1500876674835677325/2026-05-05_000510.png?ex=69fa07d4&is=69f8b654&hm=0abe9a3e42484b56180faa2219caf4ab257bb0dcfcb5a4636a9821d3571476e5&" alt="F7 Menu" class="guide-img">
-        </div>
-    </section>
-
-    <section class="page-section" id="p-3">
-        <div class="page-number">03 — STAFF 교육 매뉴얼</div>
-        <h1 class="page-title">사이드공지 교육</h1>
-        <div class="section-header blue">명령어</div>
-        <div class="block" style="font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); text-align: center; letter-spacing: 0.05em;">
-            /관리팀 &lt;말할 내용&gt;
-        </div>
-        <div class="section-header red">원칙</div>
-        <div class="block"><p class="tag-red" style="text-align: center; font-size: 16px;">"메인광장 및 메차 인근 소음공해 관련 사이드공지 1회로 진행"</p></div>
-        <div class="section-header blue">예시</div>
-        <div class="block" style="font-family: 'Space Mono', monospace; color: var(--green); text-align: center; font-size: 15px;">
-            /관리팀 메인광장 근처에서 소음공해 자제 바랍니다
-        </div>
-    </section>
-
-    <section class="page-section" id="p-4">
-        <div class="page-number">04 — STAFF 교육 매뉴얼</div>
-        <h1 class="page-title">전체채팅 기본 교육</h1>
-            <div class="block" style="border: 2px solid var(--red); background: var(--red-dim); text-align: center; box-shadow: 0 0 20px var(--red-glow);">
-                <span class="tag-red" style="font-size: 16px; display: block; margin-bottom: 8px;">인게임 내 유저들과 반말 및 친목 절대금지 [발각 시 즉시해임]</span>
-                <p style="color: var(--text); opacity: 0.6; font-size: 13px; font-weight: 500;">
-                (기본적인 인사는 가능하다 단 사적으로 이야기 하는 경우 친목으로 간주한다.)
-                </p>
+    <!-- 콘텐츠: 경고 1회 -->
+    <div id="step1" class="tab-content">
+        <div class="grid-layout">
+            <div class="card">
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>서버 규칙 미숙지 및 위반</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>신고 처리 지연 또는 무시</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>사건 처리 미숙 / 오판</strong></div>
             </div>
-        <div class="section-header blue">원칙</div>
-        <div class="block" style="text-align: center; padding: 40px;">
-            <p style="font-size: 15px; color: var(--muted); margin-bottom: 12px;">유저에게 TP 또는 소환을 하게 될 경우</p>
-            <p class="tag-red" style="font-size: 20px;">3회 공지 후 진행</p>
+            <div class="card">
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>영상 미녹화<small>로딩화면부터 촬영 필수, 2일 보관</small></strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>출퇴근부 및 활동량 미흡</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-orange)"></div><strong>피크타임 중 RP 참여</strong></div>
+            </div>
         </div>
-        <div class="section-header blue">예시 — 유저 확인</div>
-        <div class="block">
-            <div class="chat-line">수댕이 1973님 계신가요? (x3)</div>
-            <div class="chat-separator"></div>
-            <div class="chat-line">수댕이 1973님 RP중이신가요? (x3)</div>
-            <div class="chat-separator"></div>
-            <div class="chat-line">수댕이 1973님 물품회수를 위해 잠시 TP타겠습니다. (x3)</div>
+    </div>
+
+    <!-- 콘텐츠: 경고 2회 -->
+    <div id="step2" class="tab-content">
+        <div class="grid-layout">
+            <div class="card">
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>특정 유저 편파 처리</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>관리자 지시 불이행</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>유저에게 욕설 및 비하 발언</strong></div>
+            </div>
+            <div class="card">
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>정보 유출<small>내부 규정 및 로그 등</small></strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>이유 없는 권한 남용</strong></div>
+                <div class="item-row"><div class="indicator" style="background:var(--accent-red)"></div><strong>업무 태도 불량<small>무응답, 불성실 등</small></strong></div>
+            </div>
         </div>
-    </section>
+    </div>
 
-    <section class="page-section" id="p-5">
-        <div class="page-number">05 — STAFF 교육 매뉴얼</div>
-        <h1 class="page-title">디스코드 실무 교육</h1>
-        <div class="block" style="text-align: center; border-color: var(--red); background: var(--red-dim);"><span class="tag-red" style="font-size: 15px;">모든 디스코드 채널은 수시로 확인바랍니다.</span></div>
-        
-        <div class="section-header blue">본서버 디스코드</div>
-        <div class="block">
-            <p>1. 뉴비재인증: 서버목록 / 인게임화면 / 별명양식 충족 시 권한 지급</p>
-            <p>2. 권한삭제: 무조건 팩션쿨타임 권한 지급</p>
+    <!-- 콘텐츠: 해임 -->
+    <div id="dismiss" class="tab-content">
+        <div class="grid-layout">
+            <div class="card dismiss-accent">
+                <div class="item-row"><strong>부계정 악용</strong></div>
+                <div class="item-row"><strong>장기 미접속<small>일주일 이상</small></strong></div>
+                <div class="item-row"><strong>서버 이미지 훼손</strong></div>
+            </div>
+            <div class="card dismiss-accent">
+                <div class="item-row"><strong>유저와 과도한 친목</strong></div>
+                <div class="item-row"><strong>권한 이용 총기 은닉</strong></div>
+                <div class="item-row"><strong>운영자 기만 행위</strong></div>
+            </div>
         </div>
-        
-        <div class="section-header blue">관리팀 디스코드</div>
-        <div class="block">
-            <p>1. 물품회수 완료 시 <span class="tag-blue">[물품회수]</span> 채널 작성</p>
-            <p>4. 개인사정 미접속 시 <span class="tag-blue">[휴가신청]</span> 필수 작성</p>
-            <p>5. 출퇴근 시 <span class="tag-green">/출퇴근</span> 명령어 사용</p>
-            <p>6. 사건처리 완료 시 <span class="tag-green">/사처등록</span> 명령어 사용</p>
-        </div>
-
-        <div class="section-header blue">팩션 디스코드</div>
-        <div class="block">
-            <p>팩션 디스코드방은 담당 관리진이 아닐 경우 할 일이 없으나 가끔 패치요청이 올라올 경우 해당 요청만 관리팀 디스코드 패치요청에 올리기</p>
-        </div>
-
-        <div class="section-header blue">고객센터 디스코드</div>
-        <div class="block">
-            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">1. 문의가 시작되었을 경우</p>
-            <div class="chat-line">안녕하세요, 모찌서버 운영팀 OOO입니다 무엇을 도와드릴까요?</div>
-            <div class="chat-separator"></div>
-
-            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">2. 문의 대응 도중 모르는 상황이 있을 경우</p>
-            <div class="chat-line">잠시만 기다려주시면 답변 도와드리겠습니다.</div>
-            <p style="margin-top: 8px; font-size: 13px;">위에 채팅 작성 후 (<span class="tag-red">! @모찌 운영팀</span> 태그)</p>
-            <div class="chat-separator"></div>
-
-            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">3. 오래된 문의를 늦게 답변할 경우</p>
-            <div class="chat-line">답변이 늦어져 죄송합니다. &lt;해당 상황에 맞는 답변&gt;</div>
-            <div class="chat-separator"></div>
-
-            <p style="font-weight: 700; color: var(--muted); font-size: 13px;">4. 문의 종료할 때</p>
-            <div class="chat-line">추가 문의사항 있으신가요?</div>
-            <p style="margin-top: 8px; font-size: 13px;">작성 이후 문의사항이 없을 때</p>
-            <div class="chat-line">문의 종료 하겠습니다.</div>
-            <p style="margin-top: 8px; font-size: 13px;">이후 (<span class="tag-red">.문의종료</span>) 작성</p>
-        </div>
-    </section>
-
-    <section class="page-section" id="w-1">
-        <div class="page-number">06 — STAFF 경고 리스트</div>
-        <h1 class="page-title"><span class="red">경고 1회</span> 규정</h1>
-        <div class="warn-card"><div><div class="warn-card-title">서버 규칙 미숙지 및 규정 위반</div></div><div class="warn-badge badge-1">경고 1회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">신고 처리 지연 또는 무시</div></div><div class="warn-badge badge-1">경고 1회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">사건 처리 미숙 / 오판</div></div><div class="warn-badge badge-1">경고 1회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">디스코드 출퇴근부 관리 미흡</div></div><div class="warn-badge badge-1">경고 1회</div></div>  
-        <div class="warn-card"><div><div class="warn-card-title">무단 잠수</div></div><div class="warn-badge badge-1">경고 1회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">허위 보고 / 거짓말</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
-        <div class="warn-card"><div><div class="warn-card-title">팩션물품 판매</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
-        <div class="warn-card"><div><div class="warn-card-title">임의판단</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
-        <div class="warn-card"><div><div class="warn-card-title">피크타임 RP참여</div></div><div class="warn-badge badge-1">경고 1회</div></div> 
-        <div class="warn-card"><div><div class="warn-card-title">영상 미녹화</div><div class="warn-notice">서버 로딩화면부터 필수 촬영, 최소 이틀 보관 바랍니다.</div></div><div class="warn-badge badge-1">경고 1회</div></div>
-    </section>
-
-    <section class="page-section" id="w-2">
-        <div class="page-number">07 — STAFF 경고 리스트</div>
-        <h1 class="page-title"><span class="red">경고 2회</span> 규정</h1>
-        <div class="warn-card"><div><div class="warn-card-title">이유 없는 밴 / 킥 / 텔포 사용</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">특정 유저 편파 처리</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">개인 감정으로 제재 진행</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">관리자 지시 불이행</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">유저에게 욕설 / 비하 발언</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">불친절한 대응</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">디스코드 내 분쟁 유발</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">지인 특혜 제공 정보 유출 [내부 규정, 로그 등]</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">이유 없는 노클립 남용</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">업무 태도 불량 (불성실, 무응답 등)</div></div><div class="warn-badge badge-2">경고 2회</div></div>
-    </section>
-
-    <section class="page-section" id="w-3">
-        <div class="page-number">08 — STAFF 경고 리스트</div>
-        <h1 class="page-title"><span class="red">해임 처리</span> 규정</h1>
-        <div class="warn-card"><div><div class="warn-card-title">부계정 악용</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">활동 관련 장기 미접속 [일주일 이상]</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">서버 이미지 훼손</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">관리자 품위 손상</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">권력남용</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">유저와 친목</div><div class="warn-notice">4. 전체채팅 기본 교육 1-1과 동일</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">권한 넣어서 몰래 총기 빼기</div></div><div class="warn-badge dismiss">해임</div></div>
-        <div class="warn-card"><div><div class="warn-card-title">관리자 및 운영자 기만</div></div><div class="warn-badge dismiss">해임</div></div>
-    </section>
-</main>
+    </div>
+</div>
 
 <script>
-    const sections = document.querySelectorAll('.page-section');
-    const navItems = document.querySelectorAll('.nav-item');
-    const main = document.getElementById('mainContent');
-    const progress = document.getElementById('progressBar');
-    const counter = document.getElementById('sectionCounter');
-    const hint = document.getElementById('scrollHint');
-    const html = document.documentElement;
-
-    function toggleTheme() {
-        const currentTheme = html.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-        applyTheme(nextTheme);
-    }
-
-    function applyTheme(theme) {
-        html.setAttribute('data-theme', theme);
-        localStorage.setItem('mochi-theme', theme);
-        const icon = document.getElementById('theme-icon');
-        const text = document.getElementById('theme-text');
+    function openTab(evt, tabName) {
+        const tabcontent = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        const tablinks = document.getElementsByClassName("tab-btn");
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
         
-        if (theme === 'dark') {
-            icon.textContent = '☀️';
-            text.textContent = '라이트 모드';
-        } else {
-            icon.textContent = '🌙';
-            text.textContent = '다크 모드';
-        }
+        // 상단으로 부드럽게 스크롤
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    const savedTheme = localStorage.getItem('mochi-theme') || 'light';
-    applyTheme(savedTheme);
-
-    function toggleMenu(id) { document.getElementById(id).classList.toggle('collapsed'); }
-
-    function scrollToSection(id, el) {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
-
-    const navMap = {};
-    navItems.forEach(item => {
-        const match = item.getAttribute('onclick').match(/'([^']+)'/);
-        if (match) navMap[match[1]] = item;
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                const id = entry.target.id;
-                
-                navItems.forEach(item => item.classList.remove('active-blue', 'active-red'));
-                if (navMap[id]) {
-                    navMap[id].classList.add(id.startsWith('w-') ? 'active-red' : 'active-blue');
-                }
-                
-                const idx = Array.from(sections).indexOf(entry.target) + 1;
-                counter.textContent = `${String(idx).padStart(2, '0')} / ${String(sections.length).padStart(2, '0')}`;
-            }
-        });
-    }, { threshold: 0.3, root: main });
-
-    sections.forEach(s => observer.observe(s));
-
-    let isScrolling = false;
-    main.addEventListener('scroll', () => {
-        if (!isScrolling) {
-            window.requestAnimationFrame(() => {
-                const scrollable = main.scrollHeight - main.clientHeight;
-                const p = scrollable > 0 ? (main.scrollTop / scrollable) : 0;
-                
-                progress.style.transform = `scaleX(${p}) translateZ(0)`;
-                hint.style.opacity = main.scrollTop > 80 ? '0' : '1';
-                
-                isScrolling = false;
-            });
-            isScrolling = true;
-        }
-    }, { passive: true });
 </script>
+
 </body>
 </html>
